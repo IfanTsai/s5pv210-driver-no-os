@@ -9,6 +9,8 @@
 #define COL				(600)
 #define HOZVAL			(ROW - 1)
 #define LINEVAL			(COL - 1)
+#define XSIZE			ROW
+#define YSIZE			COL
 
 //时序中的时间参数
 #define HSPW 			(40)				// 1~40 DCLK  //20
@@ -52,11 +54,16 @@
 #define RED    0xff0000
 #define GREEN  0x00ff00
 #define BLUE   0x0000ff
+#define WHITE  0xffffff
 
 typedef unsigned int u32;
 
 void lcd_init();
 void lcd_draw_pixel(u32 x, u32 y, u32 color);
 void lcd_set_bkcolor(u32 color);
+void lcd_draw_line(u32 x1, u32 y1, u32 x2, u32 y2, u32 color);
+void lcd_draw_circle(u32 centerX, u32 centerY, u32 radius, u32 color);
+void lcd_write_ch(u32 x, u32 y, char ch, u32 color);
+void lcd_write_str(u32 x, u32 y, char *str, u32 color);
 
 #endif

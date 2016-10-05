@@ -13,6 +13,7 @@
 *
 */
 #include "lcd.h"
+#include "ascii.h"
 
 static u32 *pfb = (u32*)FB_ADDR;
 
@@ -90,5 +91,191 @@ void lcd_set_bkcolor(u32 color)
 		{
 			lcd_draw_pixel(i, j, color);
 		}
+	}
+}
+
+void lcd_draw_line(u32 x1, u32 y1, u32 x2, u32 y2, u32 color)
+{
+	int dx,dy,e;
+	dx=x2-x1; 
+	dy=y2-y1;
+    
+	if(dx>=0)
+	{
+		if(dy >= 0) // dy>=0
+		{
+			if(dx>=dy) // 1/8 octant
+			{
+				e=dy-dx/2;  
+				while(x1<=x2)
+				{
+					lcd_draw_pixel(x1,y1,color);
+					if(e>0){y1+=1;e-=dx;}	
+					x1+=1;
+					e+=dy;
+				}
+			}
+			else		// 2/8 octant
+			{
+				e=dx-dy/2;
+				while(y1<=y2)
+				{
+					lcd_draw_pixel(x1,y1,color);
+					if(e>0){x1+=1;e-=dy;}	
+					y1+=1;
+					e+=dx;
+				}
+			}
+		}
+		else		   // dy<0
+		{
+			dy=-dy;   // dy=abs(dy)
+
+			if(dx>=dy) // 8/8 octant
+			{
+				e=dy-dx/2;
+				while(x1<=x2)
+				{
+					lcd_draw_pixel(x1,y1,color);
+					if(e>0){y1-=1;e-=dx;}	
+					x1+=1;
+					e+=dy;
+				}
+			}
+			else	 // 7/8 octant
+			{
+				e=dx-dy/2;
+				while(y1>=y2)
+				{
+					lcd_draw_pixel(x1,y1,color);
+					if(e>0){x1+=1;e-=dy;}	
+					y1-=1;
+					e+=dx;
+				}
+			}
+		}	
+	}
+	else //dx<0
+	{
+		dx=-dx;		//dx=abs(dx)
+		if(dy >= 0) // dy>=0
+		{
+			if(dx>=dy) // 4/8 octant
+			{
+				e=dy-dx/2;
+				while(x1>=x2)
+				{
+					lcd_draw_pixel(x1,y1,color);
+					if(e>0){y1+=1;e-=dx;}	
+					x1-=1;
+					e+=dy;
+				}
+			}
+			else		// 3/8 octant
+			{
+				e=dx-dy/2;
+				while(y1<=y2)
+				{
+					lcd_draw_pixel(x1,y1,color);
+					if(e>0){x1-=1;e-=dy;}	
+					y1+=1;
+					e+=dx;
+				}
+			}
+		}
+		else		   // dy<0
+		{
+			dy=-dy;   // dy=abs(dy)
+
+			if(dx>=dy) // 5/8 octant
+			{
+				e=dy-dx/2;
+				while(x1>=x2)
+				{
+					lcd_draw_pixel(x1,y1,color);
+					if(e>0){y1-=1;e-=dx;}	
+					x1-=1;
+					e+=dy;
+				}
+			}
+			else		// 6/8 octant
+			{
+				e=dx-dy/2;
+				while(y1>=y2)
+				{
+					lcd_draw_pixel(x1,y1,color);
+					if(e>0){x1-=1;e-=dy;}	
+					y1-=1;
+					e+=dx;
+				}
+			}
+		}	
+	}
+}
+
+void lcd_draw_circle(u32 centerX, u32 centerY, u32 radius, u32 color)
+{
+	int x,y ;
+	int tempX,tempY;;
+    int SquareOfR = radius*radius;
+
+	for(y=0; y<XSIZE; y++)
+	{
+		for(x=0; x<YSIZE; x++)
+		{
+			if(y<=centerY && x<=centerX)
+			{
+				tempY=centerY-y;
+				tempX=centerX-x;                        
+			}
+			else if(y<=centerY&& x>=centerX)
+			{
+				tempY=centerY-y;
+				tempX=x-centerX;                        
+			}
+			else if(y>=centerY&& x<=centerX)
+			{
+				tempY=y-centerY;
+				tempX=centerX-x;                        
+			}
+			else
+			{
+				tempY = y-centerY;
+				tempX = x-centerX;
+			}
+			if ((tempY*tempY+tempX*tempX)<=SquareOfR)
+				lcd_draw_pixel(x, y, color);
+		}
+	}
+}
+
+void lcd_write_ch(u32 x, u32 y, char ch, u32 color)
+{
+	for(u32 j=y;j<y+16;j++)
+	{
+		for(u32 i=x, count=0;i<x+8;i++, count++)
+		{
+			//将一个字节的数据按位依次取出，并进行判断是否需要画像素
+			//ascii_8_16参考ascii.h
+			if(ascii_8_16[ch-0x20][j-y] & (0x1 << count))
+			{
+				lcd_draw_pixel(i, j, color);
+			}
+		}
+	}
+}
+
+void lcd_write_str(u32 x, u32 y, char *str, u32 color)
+{
+	while(*str)
+	{
+		if(x >= XSIZE)//对将写到屏幕外的字符的处理
+		{
+			x -= XSIZE;
+			y += 16;//将位置转到下一行
+		}
+		lcd_write_ch(x, y, *str, color);
+		str++;
+		x += 8;
 	}
 }
