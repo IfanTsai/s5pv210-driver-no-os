@@ -32,16 +32,21 @@ _start:
 	/*初始化ddr*/
 	bl sdram_asm_init
 
+	bl led_init
 	bl led_off
 	bl led1_on
 	bl _delay
+	bl _delay
+	
 
 	bl led_off
 	bl led2_on
 	bl _delay
+	bl _delay
 
 	bl led_off
 	bl led3_on
+	bl _delay
 	bl _delay
 
 	/*把BL2拷贝到ddr中*/
