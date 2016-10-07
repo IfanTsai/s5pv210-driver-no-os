@@ -1,46 +1,29 @@
 #include "clib.h" 
+#include "myshell.h"
+#include "cmd.h"
+#include "uart.h"
 
-#define BUF_SET_LEN	  5
+static void myshell_init()
+{
+	uart_init();
+}
 
 void myshell()
 {
-	//命令集
-	char *cmd_set[BUF_SET_LEN] = {"led", "lcd", "uart", "buzzer", "adc"};
-	char cmd[100] = {0};
-	int i;
+	myshell_init();
+	char str[100] = {0};
+	char cmd[CMD_CNT][CMD_LEN] = {"0"};
+
 	while(1)
 	{
-		memset(cmd, 0, sizeof(cmd));
+		memset(str, 0, sizeof(str));
 		puts("myshell$ ");
-		while(!cmd[0])//输入为空时继续等待输入
+		while(!str[0])//输入为空时继续等待输入
 		{
-			gets(cmd);
+			gets(str);
 		}
-		//puts("\r\n-----------\r\n");
-		//puts(cmd);
-		/*判断是否终止程序*/
-		if(!strcmp(cmd, "exit"))
-		{
-			puts("\r\nthe shell exited");
-			break;
-		}
-		/*遍历命令集*/
-		for(i=0;i<BUF_SET_LEN;i++)
-		{
-			if(!strcmp(cmd, cmd_set[i]))
-			{
-				puts("\r\n");
-				puts(cmd);
-				puts("\r\n");
-				break;
-			}
-		}
-		/*输入的命令不在命令集内*/
-		if(i == BUF_SET_LEN)
-		{
-			puts("\r\n");
-			puts(cmd);
-			puts(": not find commend\r\n");
-		}
+		cmd_split(str, cmd);//分割命令字符串
+		int i = cmd_parser(cmd);//解析命令
+		cmd_exec(i, cmd);//执行命令		
 	}
 }

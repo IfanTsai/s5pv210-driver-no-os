@@ -14,7 +14,7 @@ CFLAGS		:= -Wall -O2 -fno-builtin
 export CC LD OBJCOPY OBJDUMP AR CPPFLAGS CFLAGS
 
 
-objs := start.o uart.o clock.o main.o myshell.o clib.o
+objs := start.o uart.o clock.o main.o myshell.o clib.o cmd.o
 
 x210_simple_shell.bin: $(objs)
 	$(LD) -Ttext 0xd0020010 -o x210_simple_shell.elf $^
