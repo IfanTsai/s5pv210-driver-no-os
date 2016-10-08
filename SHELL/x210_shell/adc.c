@@ -1,5 +1,6 @@
 #include "adc.h"
-#include "stdio.h"
+#include "uart.h"
+#include "clib.h"
 
 static void delay()
 {
@@ -27,9 +28,11 @@ void adc_collect()
 	while(!(TSADCCON0 & (0x1 << 15)));
 	//read
 	unsigned int val = TSDATX0 & (0xfff << 0);
-	printf("value = %d\r\n", val);
-	//delay
-	delay();
+
+	char str[10] = {0};
+	itoa(val, str);
+	puts("\r\nvalue = ");
+	puts(str);
 }
 
 void adc_test()
@@ -39,6 +42,7 @@ void adc_test()
 	while(1)
 	{
 		adc_collect();
+		delay();
 	}
 }
 

@@ -1,5 +1,5 @@
 #include "buzzer.h"
-#if 1
+#if 0
 //用pwm来驱动(实际上如果不需要改变蜂鸣器频率，直接直流驱动即可)
 void buzzer_init()
 {
@@ -22,17 +22,18 @@ void buzzer_init()
 	CON |= (1 << 15);
 	/*开定时器*/
 	//CON |= (1 << 12);
-	//buzzer_off();
+	buzzer_off();
 }
 #endif
 
-#if 0
-//直流驱动
+#if 1
+//直流驱动(高电平响，低电平灭)
 void buzzer_init()
 {
 	GPD0CON &= ~(0xf << 8);
 	GPD0CON |= (0x1 << 8);
 }
+
 void buzzer_on()
 {
 	/*开定时器*/
@@ -47,4 +48,3 @@ void buzzer_off()
 	GPD0DAT &= ~(1 << 2);
 }
 #endif 
-

@@ -61,3 +61,25 @@ int strcmp(const char *s1, const char *s2)
 
 	return 0;	
 }
+
+char *itoa(unsigned int num, char *str)
+{
+	int len = 0;
+	int tnum = num;
+	if(tnum == 0)
+	{
+		len = 1;
+	}
+	while(tnum)
+	{
+		len++;
+		tnum /= 10;
+	}
+	for(int i=len-1;i>=0;i--)
+	{
+		str[i] = num % 10 + 48;
+		num /= 10;
+	}
+	str[len] = '\0';
+	return str;
+}

@@ -2,8 +2,11 @@
 //该启动代码做的一系列动作，其实在iROM中的bl0已经做了
 #define WTCON     0xe2700000
 #define SVC_STACK 0xd0037d80
+#define IRQ_STACK 0xd0037f80
 
 .global _start
+.global irq_handle
+
 _start:
 	/*开发板电源置锁*/
 	ldr r0, = 0xe010e81c
@@ -29,5 +32,20 @@ _start:
 	orr r0, r0, #(1 << 12)//bit12为0 开icache（orr为按位或）
 	mcr p15, 0, r0, c1, c0, 0//把r0的值写到cp15中
 
+	/*初始化ddr*/
+	bl sdram_asm_init
+
 	bl main//短跳转
 	b .
+
+irq_handle:
+   /*保存处理器现场*/
+   ldr sp, =IRQ_STACK//设置异常模式下的栈
+   sub lr, lr, #4//因为ARM取指令存在着流水线
+   stmfd sp!, {r0-r12, lr}//保存lr的原因是防止在异常处理函数中调用了函数导致覆盖了lr的值，保险起见就一起保存了
+   
+   /*跳转*/
+   bl irq_handler
+
+   /*恢复处理器现场*/
+   ldmfd sp!, {r0-r12, pc}^//将返回地址给pc指针，并且恢复cpsr中的值

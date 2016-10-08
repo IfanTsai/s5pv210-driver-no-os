@@ -12,5 +12,6 @@ char *gets(char *str);
 void memset(void *p, int val, int len);
 int strlen(const char *str);
 int strcmp(const char *s1, const char *s2);
+char *itoa(unsigned int num, char *str);
 
 #endif

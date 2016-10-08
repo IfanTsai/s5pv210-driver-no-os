@@ -5,7 +5,7 @@ void delay();
 
 int main(void)
 {
-    GPPJ0CON = 0x11111111;
+    GPJ0CON = 0x11111111;
 	while(1)
 	{
 		GPJ0DAT = 0xff;

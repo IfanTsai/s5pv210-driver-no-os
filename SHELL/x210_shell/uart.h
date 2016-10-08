@@ -17,5 +17,6 @@ void uart_putc(char ch);
 void uart_puts(const char *str);
 char uart_getc();
 char *uart_gets(char *str);
+int is_key_press();
 
 #endif

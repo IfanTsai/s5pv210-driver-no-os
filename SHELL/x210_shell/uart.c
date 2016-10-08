@@ -1,5 +1,6 @@
 //2016年09月04日22:23:53
 #include "uart.h"
+#include "clib.h"
 
 void uart_init()
 {
@@ -31,6 +32,19 @@ char uart_getc(void)
 		ch = '\n';
 	}
 	return ch;
+}
+
+//当有任意按键按下时，返回1，否则0
+int is_key_press()
+{
+	if(UTRSTAT0 & (1 << 0))
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 char *uart_gets(char *str)
